@@ -16,6 +16,7 @@ import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.tamz.tamzprojekt.FoodsArrayAdapter;
 import com.tamz.tamzprojekt.R;
 import com.tamz.tamzprojekt.database.DBHelper;
 import com.tamz.tamzprojekt.database.Food;
@@ -110,8 +111,10 @@ public class MainActivity extends AppCompatActivity {
 
         loadedFoods = dbHelper.getFoodsInDay(time);
 
-        ArrayAdapter adapter = new ArrayAdapter<Food>(this,
-                android.R.layout.simple_list_item_1, loadedFoods);
+        FoodsArrayAdapter adapter = new FoodsArrayAdapter(this, loadedFoods);
+
+        /*ArrayAdapter adapter = new ArrayAdapter<Food>(this,
+                android.R.layout.simple_list_item_1, loadedFoods);*/
 
         final ListView listView = findViewById(R.id.listView);
         listView.setAdapter(adapter);

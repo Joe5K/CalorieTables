@@ -115,9 +115,13 @@ public class Food {
         return salt;
     }
 
-    public long getDate() {
-        return date;
+    public String getDateStr() {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        String dateString = formatter.format(new Date(date));
+        return dateString;
     }
+
+    public long getDate(){ return this.date; }
 
     public Bitmap getImage() {
         return image;
