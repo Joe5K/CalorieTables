@@ -27,7 +27,19 @@ import java.util.Calendar;
 import java.util.Date;
 
 //Aplikacia na evidovanie prijateho jedla a kalorii, ukadanie do db, export v JSON/XML, ukladanie geolokacie a casu pridania jedla, pridavanie obrazkov, ukladanie nastaveni do pamäte
-//
+
+//UNDONE - export v JSON/XML, ukladanie geolokacie pridania jedla, pridavanie obrazkov, ukladanie nastaveni do pamäte
+
+/*Advanced GUI - Lists, Tabs, Fragments, Gestures
+Database – SQLite
+Multimedia – Audio, Video, playback, recording
+Signal Processing – Image, Sound, Sensors
+Persistent Storage – SharedPreferences
+Networking – Downloading data, JSON, WS
+ */
+
+
+
 public class MainActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
@@ -56,10 +68,14 @@ public class MainActivity extends AppCompatActivity {
                     deleting = false;
                 }
                 return true;
+            case R.id.action_stats:
+                Intent intent = new Intent(this, Statistics.class);
+                startActivityForResult(intent, 1);
+                return true;
 
             case R.id.action_settings:
-                Intent intent = new Intent(this, Settings.class);
-                startActivityForResult(intent, 1);
+                Intent intent2 = new Intent(this, Settings.class);
+                startActivityForResult(intent2, 1);
                 return true;
 
             default:
@@ -77,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         dbHelper = new DBHelper(this);
 
-        CalendarView calendarView = findViewById(R.id.calendarView);
+        final CalendarView calendarView = findViewById(R.id.calendarView);
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int day) {
@@ -94,12 +110,25 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CalendarView calendarView = findViewById(R.id.calendarView);
 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 String selectedDate = sdf.format(new Date(calendarView.getDate()));
 
                 addFood(calendarView.getDate());
+            }
+        });
+
+        final ListView listView = findViewById(R.id.listView);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Food food = (Food) listView.getItemAtPosition(i);
+                if(deleting){
+                    dbHelper.deleteFood(food);
+                    reload();
+                }
+                else
+                    editFood(food.getId());
             }
         });
 
@@ -116,21 +145,8 @@ public class MainActivity extends AppCompatActivity {
         /*ArrayAdapter adapter = new ArrayAdapter<Food>(this,
                 android.R.layout.simple_list_item_1, loadedFoods);*/
 
-        final ListView listView = findViewById(R.id.listView);
+        ListView listView = findViewById(R.id.listView);
         listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Food food = (Food) listView.getItemAtPosition(i);
-                if(deleting){
-                    dbHelper.deleteFood(food);
-                    reload();
-                }
-                else
-                    editFood(food.getId());
-            }
-        });
     }
 
     public void editFood(int id){
@@ -173,3 +189,30 @@ public class MainActivity extends AppCompatActivity {
         loadDataToCalendar((CalendarView) findViewById(R.id.calendarView));
     }
 }
+
+/*TODO
+<com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabMode="fixed">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="a" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="b" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="c" />
+
+    </com.google.android.material.tabs.TabLayout>*/

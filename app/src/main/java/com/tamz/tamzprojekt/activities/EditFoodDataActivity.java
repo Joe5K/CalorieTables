@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
@@ -28,6 +29,8 @@ public class EditFoodDataActivity extends AppCompatActivity {
     long dateAtMidnight;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         dateAtMidnight = intent.getLongExtra("DATE", 0);
@@ -39,6 +42,16 @@ public class EditFoodDataActivity extends AppCompatActivity {
             int id = intent.getIntExtra("ID", 0);
             loadEditScreen(id);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == android.R.id.home)
+        {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadNewScreen (){
