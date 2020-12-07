@@ -57,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_settings:
-                System.out.println("kk");
+                Intent intent = new Intent(this, Settings.class);
+                startActivityForResult(intent, 1);
                 return true;
 
             default:
