@@ -15,6 +15,7 @@ import android.widget.CalendarView;
 import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.tamz.tamzprojekt.R;
 import com.tamz.tamzprojekt.database.DBHelper;
 import com.tamz.tamzprojekt.database.Food;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
     private ArrayList<Food> loadedFoods;
+    private boolean deleting = false;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -39,7 +41,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        System.out.println("lkk");
         switch (item.getItemId()) {
+            case R.id.action_delete:
+                if (!deleting){
+                    Snackbar.make(findViewById(R.id.action_delete), "Delete mod is on. Click on the food you wish to delete", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    item.setIcon(R.drawable.ic_baseline_delete_forever_24);
+                    deleting = true;
+                }
+                else {
+                    Snackbar.make(findViewById(R.id.action_delete), "Delete mod is off.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    item.setIcon(R.drawable.ic_baseline_delete_outline_24);
+                    deleting = false;
+                }
+                return true;
+
             case R.id.action_settings:
                 System.out.println("kk");
                 return true;
@@ -81,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 String selectedDate = sdf.format(new Date(calendarView.getDate()));
 
-                //Snackbar.make(view, selectedDate, Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
                 addFood(calendarView.getDate());
             }
         });
@@ -105,7 +119,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Food food = (Food) listView.getItemAtPosition(i);
-                editFood(food.getId());
+                if(deleting){
+                    dbHelper.deleteFood(food);
+                    reload();
+                }
+                else
+                    editFood(food.getId());
             }
         });
     }
@@ -118,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("ACTION", "EDIT");
         intent.putExtra("ID", id);
         intent.putExtra("DATE", getMidnightTime(calendarView.getDate()));
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     public void addFood(long date) {
@@ -126,7 +145,13 @@ public class MainActivity extends AppCompatActivity {
 
         intent.putExtra("ACTION", "NEW");
         intent.putExtra("DATE", getMidnightTime(date));
-        startActivity(intent);
+        startActivityForResult(intent,1);
+    }
+
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        // Collect data from the intent and use it
+        super.onActivityResult(requestCode, resultCode, data);
+        reload();
     }
 
     private static long getMidnightTime(long time){
@@ -138,5 +163,9 @@ public class MainActivity extends AppCompatActivity {
         long sinceMidnight = (time + offset) %
                 (24 * 60 * 60 * 1000);
         return time - sinceMidnight;
+    }
+
+    public void reload() {
+        loadDataToCalendar((CalendarView) findViewById(R.id.calendarView));
     }
 }

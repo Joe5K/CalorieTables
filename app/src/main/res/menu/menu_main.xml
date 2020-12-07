@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".activities.MainActivity">
 
     <item
-        android:id="@+id/action_favorite"
-        android:icon="@drawable/ic_android"
-        android:title="hmmm"
+        android:id="@+id/action_delete"
+        android:icon="@drawable/ic_baseline_delete_outline_24"
+        android:title="Delete"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_settings"
