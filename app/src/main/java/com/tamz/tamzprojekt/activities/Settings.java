@@ -51,7 +51,6 @@ public class Settings extends AppCompatActivity {
                 editor = putDouble(editor, KEY_SUGARS, DataManipulator.getDoubleFromEditText(findViewById(R.id.sugars)));
                 editor = putDouble(editor, KEY_PROTEINS, DataManipulator.getDoubleFromEditText(findViewById(R.id.proteins)));
                 editor = putDouble(editor, KEY_SALT, DataManipulator.getDoubleFromEditText(findViewById(R.id.salt)));
-                //editor.putInt(getString(R.string.saved_high_score_key), newHighScore);
                 editor.apply();
                 finish();
             }

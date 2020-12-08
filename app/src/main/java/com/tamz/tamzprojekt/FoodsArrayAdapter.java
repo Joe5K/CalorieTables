@@ -33,14 +33,8 @@ public class FoodsArrayAdapter extends ArrayAdapter<Food> {
         View rowView = inflater.inflate(R.layout.adapter_foods, parent, false);
         TextView name = (TextView) rowView.findViewById(R.id.name);
         TextView date = (TextView) rowView.findViewById(R.id.date);
-        /*ImageButton button = rowView.findViewById(R.id.deleteButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });*/
-        //ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+        imageView.setImageBitmap(foods.get(position).getImage());
         name.setText(foods.get(position).getName());
         date.setText(foods.get(position).getDateStr());
         // change the icon for Windows and iPhone

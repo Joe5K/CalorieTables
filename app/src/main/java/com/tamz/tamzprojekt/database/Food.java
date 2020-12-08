@@ -12,7 +12,7 @@ public class Food {
     private long date;
     private Bitmap image;
 
-    public Food(String name, double weight, double calories, double fats, double sacharids, double sugars, double proteins, double salt, long date){//, Bitmap image) { TODO
+    public Food(String name, double weight, double calories, double fats, double sacharids, double sugars, double proteins, double salt, long date, Bitmap image) {
         this.name = name;
         this.weight = weight;
         this.calories = calories;
@@ -22,10 +22,10 @@ public class Food {
         this.proteins = proteins;
         this.salt = salt;
         this.date = date;
-        //this.image = image;
+        this.image = image;
     }
 
-    public Food(int id, String name, double weight, double calories, double fats, double sacharids, double sugars, double proteins, double salt, long date){//, Bitmap image) { TODO
+    public Food(int id, String name, double weight, double calories, double fats, double sacharids, double sugars, double proteins, double salt, long date, Bitmap image) {
         this.id = id;
         this.name = name;
         this.weight = weight;
@@ -36,7 +36,7 @@ public class Food {
         this.proteins = proteins;
         this.salt = salt;
         this.date = date;
-        //this.image = image;
+        this.image = image;
     }
 
     public void setName(String name) {
