@@ -2,7 +2,6 @@ package com.tamz.tamzprojekt.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,12 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.tamz.tamzprojekt.Common;
 import com.tamz.tamzprojekt.FoodsArrayAdapter;
 import com.tamz.tamzprojekt.R;
 import com.tamz.tamzprojekt.database.DBHelper;
@@ -44,7 +43,6 @@ Networking – Downloading data, JSON, WS
 public class MainActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
-    private ArrayList<Food> loadedFoods;
     private boolean deleting = false;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -136,9 +134,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadDataToCalendar(CalendarView calendarView){
-        long time = getMidnightTime(calendarView.getDate());
+        long time = Common.getMidnightTime(calendarView.getDate());
 
-        loadedFoods = dbHelper.getFoodsInDay(time);
+        ArrayList<Food> loadedFoods = dbHelper.getFoodsInDay(time);
 
         FoodsArrayAdapter adapter = new FoodsArrayAdapter(this, loadedFoods);
 
@@ -156,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
         intent.putExtra("ACTION", "EDIT");
         intent.putExtra("ID", id);
-        intent.putExtra("DATE", getMidnightTime(calendarView.getDate()));
+        intent.putExtra("DATE", Common.getMidnightTime(calendarView.getDate()));
         startActivityForResult(intent, 1);
     }
 
@@ -164,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EditFoodDataActivity.class);
 
         intent.putExtra("ACTION", "NEW");
-        intent.putExtra("DATE", getMidnightTime(date));
+        intent.putExtra("DATE", Common.getMidnightTime(date));
         startActivityForResult(intent,1);
     }
 
@@ -172,17 +170,6 @@ public class MainActivity extends AppCompatActivity {
         // Collect data from the intent and use it
         super.onActivityResult(requestCode, resultCode, data);
         reload();
-    }
-
-    private static long getMidnightTime(long time){
-        Calendar rightNow = Calendar.getInstance();
-
-        long offset = rightNow.get(Calendar.ZONE_OFFSET) +
-                rightNow.get(Calendar.DST_OFFSET);
-
-        long sinceMidnight = (time + offset) %
-                (24 * 60 * 60 * 1000);
-        return time - sinceMidnight;
     }
 
     public void reload() {

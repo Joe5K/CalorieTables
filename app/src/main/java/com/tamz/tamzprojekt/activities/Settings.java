@@ -10,10 +10,8 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.tamz.tamzprojekt.DataManipulator;
+import com.tamz.tamzprojekt.Common;
 import com.tamz.tamzprojekt.R;
-
-import java.util.Locale;
 
 public class Settings extends AppCompatActivity {
     private static final String KEY_CALORIES = "Calories";
@@ -32,12 +30,19 @@ public class Settings extends AppCompatActivity {
 
         final SharedPreferences sharedPref = getSharedPreferences("goals", Context.MODE_PRIVATE);
 
-        ((EditText) findViewById(R.id.calories)).setText(getData(sharedPref, KEY_CALORIES, 0));
-        ((EditText) findViewById(R.id.fats)).setText(getData(sharedPref, KEY_FATS, 0));
-        ((EditText) findViewById(R.id.saccharides)).setText(getData(sharedPref, KEY_SACCHARIDES, 0));
-        ((EditText) findViewById(R.id.sugars)).setText(getData(sharedPref, KEY_SUGARS, 0));
-        ((EditText) findViewById(R.id.proteins)).setText(getData(sharedPref, KEY_PROTEINS, 0));
-        ((EditText) findViewById(R.id.salt)).setText(getData(sharedPref, KEY_SALT, 0));
+        final EditText calories = findViewById(R.id.calories);
+        final EditText fats = findViewById(R.id.fats);
+        final EditText saccharides = findViewById(R.id.saccharides);
+        final EditText sugars = findViewById(R.id.sugars);
+        final EditText proteins = findViewById(R.id.proteins);
+        final EditText salt = findViewById(R.id.salt);
+
+        calories.setText(getData(sharedPref, KEY_CALORIES, 0));
+        fats.setText(getData(sharedPref, KEY_FATS, 0));
+        saccharides.setText(getData(sharedPref, KEY_SACCHARIDES, 0));
+        sugars.setText(getData(sharedPref, KEY_SUGARS, 0));
+        proteins.setText(getData(sharedPref, KEY_PROTEINS, 0));
+        salt.setText(getData(sharedPref, KEY_SALT, 0));
 
         FloatingActionButton floatingActionButton = findViewById(R.id.floatingActionButton2);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -45,12 +50,12 @@ public class Settings extends AppCompatActivity {
             public void onClick(View view) {
 
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor = putDouble(editor, KEY_CALORIES, DataManipulator.getDoubleFromEditText(findViewById(R.id.calories)));
-                editor = putDouble(editor, KEY_FATS, DataManipulator.getDoubleFromEditText(findViewById(R.id.fats)));
-                editor = putDouble(editor, KEY_SACCHARIDES, DataManipulator.getDoubleFromEditText(findViewById(R.id.saccharides)));
-                editor = putDouble(editor, KEY_SUGARS, DataManipulator.getDoubleFromEditText(findViewById(R.id.sugars)));
-                editor = putDouble(editor, KEY_PROTEINS, DataManipulator.getDoubleFromEditText(findViewById(R.id.proteins)));
-                editor = putDouble(editor, KEY_SALT, DataManipulator.getDoubleFromEditText(findViewById(R.id.salt)));
+                editor = putDouble(editor, KEY_CALORIES, Common.getDoubleFromEditText(calories));
+                editor = putDouble(editor, KEY_FATS, Common.getDoubleFromEditText(fats));
+                editor = putDouble(editor, KEY_SACCHARIDES, Common.getDoubleFromEditText(saccharides));
+                editor = putDouble(editor, KEY_SUGARS, Common.getDoubleFromEditText(sugars));
+                editor = putDouble(editor, KEY_PROTEINS, Common.getDoubleFromEditText(proteins));
+                editor = putDouble(editor, KEY_SALT, Common.getDoubleFromEditText(salt));
                 editor.apply();
                 finish();
             }
@@ -63,7 +68,7 @@ public class Settings extends AppCompatActivity {
 
     public static String getData(final SharedPreferences prefs, final String key, final double defaultValue) {
         double num =  Double.longBitsToDouble(prefs.getLong(key, Double.doubleToLongBits(defaultValue)));
-        return DataManipulator.getStringFromDouble(num);
+        return Common.getStringFromDouble(num);
     }
 
     @Override

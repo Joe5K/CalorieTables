@@ -208,8 +208,9 @@
 
     <TimePicker
         android:id="@+id/timePicker"
-        android:layout_width="226dp"
-        android:layout_height="177dp"
+        android:layout_width="184dp"
+        android:layout_height="170dp"
+        android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="time"
         android:timePickerMode="spinner"
@@ -218,8 +219,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="154dp"
-        android:layout_height="171dp"
+        android:layout_width="169dp"
+        android:layout_height="223dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:adjustViewBounds="true"

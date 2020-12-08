@@ -5,7 +5,6 @@ import androidx.core.content.ContextCompat;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -15,12 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TimePicker;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.tamz.tamzprojekt.DataManipulator;
+import com.tamz.tamzprojekt.Common;
 import com.tamz.tamzprojekt.R;
 import com.tamz.tamzprojekt.database.DBHelper;
 import com.tamz.tamzprojekt.database.Food;
@@ -88,25 +86,34 @@ public class EditFoodDataActivity extends AppCompatActivity {
         newImage = ContextCompat.getDrawable(this, R.drawable.ic_baseline_add_a_photo_24);
         setContentView(R.layout.activity_edit_food_data);
 
-        TimePicker timePicker = findViewById(R.id.timePicker);
+        final TimePicker timePicker = findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
         final ImageView imageView = findViewById(R.id.imageView);
         imageView.setImageDrawable(newImage);
 
+        final EditText name = findViewById(R.id.name);
+        final EditText weight = findViewById(R.id.weight);
+        final EditText calories = findViewById(R.id.calories);
+        final EditText fats = findViewById(R.id.fats);
+        final EditText saccharides = findViewById(R.id.saccharides);
+        final EditText sugars = findViewById(R.id.sugars);
+        final EditText proteins = findViewById(R.id.proteins);
+        final EditText salt = findViewById(R.id.salt);
+
         if (id != 0){
             Food food = dbHelper.getFood(id);
-            ((EditText) findViewById(R.id.name)).setText(food.getName());
-            ((EditText) findViewById(R.id.weight)).setText(DataManipulator.getStringFromDouble(food.getWeight()));
-            ((EditText) findViewById(R.id.calories)).setText(DataManipulator.getStringFromDouble(food.getCalories()));
-            ((EditText) findViewById(R.id.fats)).setText(DataManipulator.getStringFromDouble(food.getFats()));
-            ((EditText) findViewById(R.id.saccharides)).setText(DataManipulator.getStringFromDouble(food.getSaccharides()));
-            ((EditText) findViewById(R.id.sugars)).setText(DataManipulator.getStringFromDouble(food.getSugars()));
-            ((EditText) findViewById(R.id.proteins)).setText(DataManipulator.getStringFromDouble(food.getProteins()));
-            ((EditText) findViewById(R.id.salt)).setText(DataManipulator.getStringFromDouble(food.getSalt()));
+            name.setText(food.getName());
+            weight.setText(Common.getStringFromDouble(food.getWeight()));
+            calories.setText(Common.getStringFromDouble(food.getCalories()));
+            fats.setText(Common.getStringFromDouble(food.getFats()));
+            saccharides.setText(Common.getStringFromDouble(food.getSaccharides()));
+            sugars.setText(Common.getStringFromDouble(food.getSugars()));
+            proteins.setText(Common.getStringFromDouble(food.getProteins()));
+            salt.setText(Common.getStringFromDouble(food.getSalt()));
             if(food.getImage()!= null){
                 imageBitmap = food.getImage();
                 imageView.setImageBitmap(imageBitmap);}
-            Pair<Integer, Integer> time = DataManipulator.getTimeFromDate(food.getDate());
+            Pair<Integer, Integer> time = Common.getTimeFromDate(food.getDate());
             timePicker.setHour(time.first);
             timePicker.setMinute(time.second);
         }
@@ -115,18 +122,20 @@ public class EditFoodDataActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePicker timePicker = findViewById(R.id.timePicker);
-                String name = ((EditText) findViewById(R.id.name)).getText().toString();
-                double weight = DataManipulator.getDoubleFromEditText(findViewById(R.id.weight));
-                double calories = DataManipulator.getDoubleFromEditText(findViewById(R.id.calories));
-                double fats = DataManipulator.getDoubleFromEditText(findViewById(R.id.fats));
-                double saccharides = DataManipulator.getDoubleFromEditText(findViewById(R.id.saccharides));
-                double sugars = DataManipulator.getDoubleFromEditText(findViewById(R.id.sugars));
-                double proteins = DataManipulator.getDoubleFromEditText(findViewById(R.id.proteins));
-                double salt = DataManipulator.getDoubleFromEditText(findViewById(R.id.salt));
+
                 long time = dateAtMidnight + timePicker.getMinute()*60000 + timePicker.getHour()*3600000;
 
-                Food food = new Food(name, weight, calories, fats, saccharides, sugars, proteins, salt, time, imageBitmap);
+                Food food = new Food(
+                        name.getText().toString(),
+                        Common.getDoubleFromEditText(weight),
+                        Common.getDoubleFromEditText(calories),
+                        Common.getDoubleFromEditText(fats),
+                        Common.getDoubleFromEditText(saccharides),
+                        Common.getDoubleFromEditText(sugars),
+                        Common.getDoubleFromEditText(proteins),
+                        Common.getDoubleFromEditText(salt),
+                        time,
+                        imageBitmap);
 
                 if (id == 0) {
                     dbHelper.addFood(food);

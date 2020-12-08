@@ -8,13 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import androidx.annotation.Nullable;
-
-import com.tamz.tamzprojekt.R;
-
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = "CalorieTables.db";
@@ -71,7 +66,7 @@ public class DBHelper extends SQLiteOpenHelper{
         values.put(KEY_PROTEINS, food.getProteins());
         values.put(KEY_SALT, food.getSalt());
         values.put(KEY_DATE, food.getDate());
-        values.put(KEY_IMAGE, getBitmapAsByteArray(food.getImage()));
+        values.put(KEY_IMAGE, getByteArrayFromBitmap(food.getImage()));
 
         db.insert(TABLE_FOODS, null, values);
 
@@ -83,7 +78,7 @@ public class DBHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_FOODS, new String[]{KEY_ID,
                         KEY_NAME, KEY_WEIGHT, KEY_CALORIES, KEY_FATS, KEY_SACCHARIDES, KEY_SUGARS, KEY_PROTEINS, KEY_SALT, KEY_DATE, KEY_IMAGE}, KEY_ID + "=?",
-                new String[]{String.valueOf(id)}, null, null, null, null); //TODO add image
+                new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -99,15 +94,17 @@ public class DBHelper extends SQLiteOpenHelper{
                 cursor.getDouble(cursor.getColumnIndex(KEY_PROTEINS)),
                 cursor.getDouble(cursor.getColumnIndex(KEY_SALT)),
                 cursor.getLong(cursor.getColumnIndex(KEY_DATE)),
-                getImage(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE))));
+                getBitmapFromByteArray(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE))));
     }
+
+    
 
     public Food getNewestFoodInfo(String name) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_FOODS, new String[]{KEY_ID,
                         KEY_NAME, KEY_WEIGHT, KEY_CALORIES, KEY_FATS, KEY_SACCHARIDES, KEY_SUGARS, KEY_PROTEINS, KEY_SALT, KEY_DATE, KEY_IMAGE}, KEY_NAME + "=?",
-                new String[]{name}, null, null, KEY_DATE + " DESC", null); //TODO add image
+                new String[]{name}, null, null, KEY_DATE + " DESC", null);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -123,7 +120,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 cursor.getDouble(cursor.getColumnIndex(KEY_PROTEINS)),
                 cursor.getDouble(cursor.getColumnIndex(KEY_SALT)),
                 cursor.getLong(cursor.getColumnIndex(KEY_DATE)),
-                getImage(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE))));
+                getBitmapFromByteArray(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE))));
     }
 
     public ArrayList<Food> getFoodsInDay(long date) {
@@ -133,7 +130,7 @@ public class DBHelper extends SQLiteOpenHelper{
 
         Cursor cursor = db.query(TABLE_FOODS, new String[]{KEY_ID,
                         KEY_NAME, KEY_WEIGHT, KEY_CALORIES, KEY_FATS, KEY_SACCHARIDES, KEY_SUGARS, KEY_PROTEINS, KEY_SALT, KEY_DATE, KEY_IMAGE}, KEY_DATE + " BETWEEN ? AND ?",
-                new String[]{String.valueOf(date), String.valueOf(date + 86400000)}, null, null, KEY_DATE, null); //TODO add image
+                new String[]{String.valueOf(date), String.valueOf(getTomorrowDate(date))}, null, null, KEY_DATE, null);
 
         if (cursor != null)
             cursor.moveToFirst();
@@ -150,7 +147,7 @@ public class DBHelper extends SQLiteOpenHelper{
                     cursor.getDouble(cursor.getColumnIndex(KEY_PROTEINS)),
                     cursor.getDouble(cursor.getColumnIndex(KEY_SALT)),
                     cursor.getLong(cursor.getColumnIndex(KEY_DATE)),
-                    getImage(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE)))));
+                    getBitmapFromByteArray(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE)))));
             cursor.moveToNext();
         }
         System.out.println(foodList.size());
@@ -177,12 +174,16 @@ public class DBHelper extends SQLiteOpenHelper{
         contentValues.put(KEY_PROTEINS,food.getProteins());
         contentValues.put(KEY_SALT,food.getSalt());
         contentValues.put(KEY_DATE,food.getDate());
-        contentValues.put(KEY_IMAGE, getBitmapAsByteArray(food.getImage()));
+        contentValues.put(KEY_IMAGE, getByteArrayFromBitmap(food.getImage()));
 
         db.update(TABLE_FOODS, contentValues,"ID=?",new String[] {Integer.toString(food.getId())});
     }
 
-    private static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+    private static long getTomorrowDate(long date){
+        return date + 86400000;
+    }
+
+    private static byte[] getByteArrayFromBitmap(Bitmap bitmap) {
         if (bitmap == null)
             return null;
 
@@ -191,7 +192,7 @@ public class DBHelper extends SQLiteOpenHelper{
         return outputStream.toByteArray();
     }
 
-    public Bitmap getImage(byte[] data){
+    private static Bitmap getBitmapFromByteArray(byte[] data){
         if (data == null)
             return null;
 
