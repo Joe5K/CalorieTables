@@ -83,7 +83,7 @@ public class DBHelper extends SQLiteOpenHelper{
             cursor.moveToFirst();
 
         // return contact
-        return new Food(
+        Food food = new Food(
                 cursor.getInt(cursor.getColumnIndex(KEY_ID)),
                 cursor.getString(cursor.getColumnIndex(KEY_NAME)),
                 cursor.getDouble(cursor.getColumnIndex(KEY_WEIGHT)),
@@ -95,9 +95,11 @@ public class DBHelper extends SQLiteOpenHelper{
                 cursor.getDouble(cursor.getColumnIndex(KEY_SALT)),
                 cursor.getLong(cursor.getColumnIndex(KEY_DATE)),
                 getBitmapFromByteArray(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE))));
+        cursor.close();
+        return food;
     }
 
-    
+
 
     public Food getNewestFoodInfo(String name) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -109,7 +111,7 @@ public class DBHelper extends SQLiteOpenHelper{
             cursor.moveToFirst();
 
         // return contact
-        return new Food(
+        Food food = new Food(
                 cursor.getInt(cursor.getColumnIndex(KEY_ID)),
                 cursor.getString(cursor.getColumnIndex(KEY_NAME)),
                 cursor.getDouble(cursor.getColumnIndex(KEY_WEIGHT)),
@@ -121,6 +123,8 @@ public class DBHelper extends SQLiteOpenHelper{
                 cursor.getDouble(cursor.getColumnIndex(KEY_SALT)),
                 cursor.getLong(cursor.getColumnIndex(KEY_DATE)),
                 getBitmapFromByteArray(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE))));
+        cursor.close();
+        return food;
     }
 
     public ArrayList<Food> getFoodsInDay(long date) {
@@ -150,6 +154,7 @@ public class DBHelper extends SQLiteOpenHelper{
                     getBitmapFromByteArray(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE)))));
             cursor.moveToNext();
         }
+        cursor.close();
         System.out.println(foodList.size());
         return foodList;
     }
@@ -197,5 +202,37 @@ public class DBHelper extends SQLiteOpenHelper{
             return null;
 
         return BitmapFactory.decodeByteArray(data, 0, data.length);
+    }
+
+    public ArrayList<Food> getAllFoodsWith(String query) {
+        ArrayList<Food> foodList = new ArrayList<Food>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_FOODS, new String[]{KEY_ID,
+                        KEY_NAME, KEY_WEIGHT, KEY_CALORIES, KEY_FATS, KEY_SACCHARIDES, KEY_SUGARS, KEY_PROTEINS, KEY_SALT, KEY_DATE, KEY_IMAGE}, KEY_NAME + " LIKE ?",
+                new String[]{"%"+query+"%"}, "LOWER("+KEY_NAME+")", null, null, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            foodList.add(new Food(
+                    cursor.getInt(cursor.getColumnIndex(KEY_ID)),
+                    cursor.getString(cursor.getColumnIndex(KEY_NAME)),
+                    cursor.getDouble(cursor.getColumnIndex(KEY_WEIGHT)),
+                    cursor.getDouble(cursor.getColumnIndex(KEY_CALORIES)),
+                    cursor.getDouble(cursor.getColumnIndex(KEY_FATS)),
+                    cursor.getDouble(cursor.getColumnIndex(KEY_SACCHARIDES)),
+                    cursor.getDouble(cursor.getColumnIndex(KEY_SUGARS)),
+                    cursor.getDouble(cursor.getColumnIndex(KEY_PROTEINS)),
+                    cursor.getDouble(cursor.getColumnIndex(KEY_SALT)),
+                    cursor.getLong(cursor.getColumnIndex(KEY_DATE)),
+                    getBitmapFromByteArray(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE)))));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        System.out.println(foodList.size());
+        return foodList;
     }
 }

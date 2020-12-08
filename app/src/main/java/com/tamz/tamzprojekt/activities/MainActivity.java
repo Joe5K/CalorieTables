@@ -11,19 +11,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CalendarView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.tamz.tamzprojekt.Common;
 import com.tamz.tamzprojekt.FoodsArrayAdapter;
 import com.tamz.tamzprojekt.R;
 import com.tamz.tamzprojekt.database.DBHelper;
 import com.tamz.tamzprojekt.database.Food;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 //Aplikacia na evidovanie prijateho jedla a kalorii, ukadanie do db, export v JSON/XML, ukladanie geolokacie a casu pridania jedla, pridavanie obrazkov, ukladanie nastaveni do pamäte
 
@@ -43,7 +41,7 @@ Networking – Downloading data, JSON, WS
 public class MainActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
-    private boolean deleting = false;
+    CalendarView calendarView;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -54,25 +52,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_delete:
-                if (!deleting){
-                    Snackbar.make(findViewById(R.id.action_delete), "Delete mod is on. Click on the food you wish to delete", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                    item.setIcon(R.drawable.ic_baseline_delete_forever_24);
-                    deleting = true;
-                }
-                else {
-                    Snackbar.make(findViewById(R.id.action_delete), "Delete mod is off.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                    item.setIcon(R.drawable.ic_baseline_delete_outline_24);
-                    deleting = false;
-                }
-                return true;
             case R.id.action_stats:
-                Intent intent = new Intent(this, Statistics.class);
+                Intent intent = new Intent(this, StatisticsActivity.class);
+                intent.putExtra("DATE", calendarView.getDate());
                 startActivityForResult(intent, 1);
                 return true;
 
             case R.id.action_settings:
-                Intent intent2 = new Intent(this, Settings.class);
+                Intent intent2 = new Intent(this, SettingsActivity.class);
                 startActivityForResult(intent2, 1);
                 return true;
 
@@ -85,13 +72,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        // Collect data from the intent and use it
+        super.onActivityResult(requestCode, resultCode, data);
+        reload();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         dbHelper = new DBHelper(this);
 
-        final CalendarView calendarView = findViewById(R.id.calendarView);
+        calendarView = findViewById(R.id.calendarView);
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int day) {
@@ -99,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 c.set(year, month, day);
                 calendarView.setDate(c.getTimeInMillis());
 
-                loadDataToCalendar(calendarView);
+                loadDataToCalendar();
 
             }
         });
@@ -109,10 +103,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                String selectedDate = sdf.format(new Date(calendarView.getDate()));
-
-                addFood(calendarView.getDate());
+                addFood();
             }
         });
 
@@ -121,85 +112,55 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Food food = (Food) listView.getItemAtPosition(i);
-                if(deleting){
-                    dbHelper.deleteFood(food);
-                    reload();
-                }
-                else
-                    editFood(food.getId());
+
+                editFood(food);
             }
         });
 
-        loadDataToCalendar(calendarView);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Food food = (Food) listView.getItemAtPosition(i);
+
+                dbHelper.deleteFood(food);
+                reload();
+
+                return true;
+            }
+        });
+
+        loadDataToCalendar();
+
+        Toast.makeText(getApplicationContext(), "Hold the food record to delete it.", Toast.LENGTH_LONG).show();
     }
 
-    public void loadDataToCalendar(CalendarView calendarView){
+    public void loadDataToCalendar(){
         long time = Common.getMidnightTime(calendarView.getDate());
 
         ArrayList<Food> loadedFoods = dbHelper.getFoodsInDay(time);
 
         FoodsArrayAdapter adapter = new FoodsArrayAdapter(this, loadedFoods);
 
-        /*ArrayAdapter adapter = new ArrayAdapter<Food>(this,
-                android.R.layout.simple_list_item_1, loadedFoods);*/
-
         ListView listView = findViewById(R.id.listView);
         listView.setAdapter(adapter);
     }
 
-    public void editFood(int id){
+    public void editFood(Food food){
         Intent intent = new Intent(this, EditFoodDataActivity.class);
-
-        CalendarView calendarView = findViewById(R.id.calendarView);
-
-        intent.putExtra("ACTION", "EDIT");
-        intent.putExtra("ID", id);
+        intent.putExtra("ID", food.getId());
         intent.putExtra("DATE", Common.getMidnightTime(calendarView.getDate()));
+        intent.putExtra("ACTION", "EDIT");
         startActivityForResult(intent, 1);
     }
 
-    public void addFood(long date) {
-        Intent intent = new Intent(this, EditFoodDataActivity.class);
+    public void addFood() {
+        Intent intent = new Intent(this, NewFoodActivity.class);
+        intent.putExtra("DATE", Common.getMidnightTime(calendarView.getDate()));
 
-        intent.putExtra("ACTION", "NEW");
-        intent.putExtra("DATE", Common.getMidnightTime(date));
         startActivityForResult(intent,1);
     }
 
-    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-        // Collect data from the intent and use it
-        super.onActivityResult(requestCode, resultCode, data);
-        reload();
-    }
-
     public void reload() {
-        loadDataToCalendar((CalendarView) findViewById(R.id.calendarView));
+        loadDataToCalendar();
     }
 }
-
-/*TODO
-<com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tabMode="fixed">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="a" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="b" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="c" />
-
-    </com.google.android.material.tabs.TabLayout>*/

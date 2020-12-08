@@ -12,9 +12,12 @@ import android.provider.MediaStore;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,73 +26,38 @@ import com.tamz.tamzprojekt.R;
 import com.tamz.tamzprojekt.database.DBHelper;
 import com.tamz.tamzprojekt.database.Food;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class EditFoodDataActivity extends AppCompatActivity {
-    DBHelper dbHelper;
-    long dateAtMidnight;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     private Bitmap imageBitmap;
-    private Drawable newImage;
+    private TextView deleteTextView;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        dateAtMidnight = intent.getLongExtra("DATE", 0);
-        dbHelper = new DBHelper(this);
-        if (Objects.equals(intent.getStringExtra("ACTION"), "NEW")){
-            loadNewScreen();
-        }
-        else if (Objects.equals(intent.getStringExtra("ACTION"), "EDIT")){
-            int id = intent.getIntExtra("ID", 0);
-            loadEditScreen(id);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
-            ImageView imageView = findViewById(R.id.imageView);
-            imageView.setImageBitmap(imageBitmap);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if(item.getItemId() == android.R.id.home)
-        {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void loadNewScreen (){
-        setContentView(R.layout.activity_new_food);
-
-        Button newButton = findViewById(R.id.buttonNew);
-        newButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadEditScreen(0);
-            }
-        });
-    }
-
-    private void loadEditScreen (final int id){
-        newImage = ContextCompat.getDrawable(this, R.drawable.ic_baseline_add_a_photo_24);
         setContentView(R.layout.activity_edit_food_data);
+
+        Intent intent = getIntent();
+        final long dateAtMidnight = intent.getLongExtra("DATE", 0);
+        final int id = intent.getIntExtra("ID", 0);
+        final String action = intent.getStringExtra("ACTION");
+
+        final DBHelper dbHelper = new DBHelper(this);
+
+        deleteTextView = findViewById(R.id.deleteTextView);
+        deleteTextView.setVisibility(TextView.INVISIBLE);
 
         final TimePicker timePicker = findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
-        final ImageView imageView = findViewById(R.id.imageView);
+
+        final Drawable newImage = ContextCompat.getDrawable(this, R.drawable.ic_baseline_add_a_photo_24);
+        imageView = findViewById(R.id.imageView);
         imageView.setImageDrawable(newImage);
+
 
         final EditText name = findViewById(R.id.name);
         final EditText weight = findViewById(R.id.weight);
@@ -100,7 +68,8 @@ public class EditFoodDataActivity extends AppCompatActivity {
         final EditText proteins = findViewById(R.id.proteins);
         final EditText salt = findViewById(R.id.salt);
 
-        if (id != 0){
+
+        if (id != 0) {
             Food food = dbHelper.getFood(id);
             name.setText(food.getName());
             weight.setText(Common.getStringFromDouble(food.getWeight()));
@@ -110,12 +79,21 @@ public class EditFoodDataActivity extends AppCompatActivity {
             sugars.setText(Common.getStringFromDouble(food.getSugars()));
             proteins.setText(Common.getStringFromDouble(food.getProteins()));
             salt.setText(Common.getStringFromDouble(food.getSalt()));
-            if(food.getImage()!= null){
-                imageBitmap = food.getImage();
-                imageView.setImageBitmap(imageBitmap);}
-            Pair<Integer, Integer> time = Common.getTimeFromDate(food.getDate());
-            timePicker.setHour(time.first);
-            timePicker.setMinute(time.second);
+            if (!"NEW".equals(action)){
+                if (food.getImage() != null) {
+                    imageBitmap = food.getImage();
+                    imageView.setImageBitmap(imageBitmap);
+                    deleteTextView.setVisibility(TextView.VISIBLE);
+                }
+                Pair<Integer, Integer> time = Common.getTimeFromDate(food.getDate());
+                timePicker.setHour(time.first);
+                timePicker.setMinute(time.second);
+            }
+        }
+        else {
+            String searchBarName = intent.getStringExtra("NAME");
+            name.setText(searchBarName);
+
         }
 
         FloatingActionButton fab = findViewById(R.id.floatingActionButton);
@@ -123,7 +101,7 @@ public class EditFoodDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                long time = dateAtMidnight + timePicker.getMinute()*60000 + timePicker.getHour()*3600000;
+                long time = dateAtMidnight + timePicker.getMinute() * 60000 + timePicker.getHour() * 3600000;
 
                 Food food = new Food(
                         name.getText().toString(),
@@ -137,10 +115,10 @@ public class EditFoodDataActivity extends AppCompatActivity {
                         time,
                         imageBitmap);
 
-                if (id == 0) {
+                if ("NEW".equals(action)) {
                     dbHelper.addFood(food);
                 }
-                else {
+                else if ("EDIT".equals(action)){
                     food.setId(id);
                     dbHelper.editFood(food);
                 }
@@ -153,20 +131,38 @@ public class EditFoodDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                try {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                } catch (ActivityNotFoundException e) {
-                    // display error state to the user
-                }
+                startActivityForResult(takePictureIntent, 1);
             }
         });
 
-        /*imageView.setOnLongClickListener(new View.OnLongClickListener() {
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                imageBitmap = null;
                 imageView.setImageDrawable(newImage);
+                deleteTextView.setVisibility(TextView.INVISIBLE);
                 return true;
             }
-        });*/
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            imageBitmap = (Bitmap) extras.get("data");
+            imageView.setImageBitmap(imageBitmap);
+            deleteTextView.setVisibility(TextView.VISIBLE);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

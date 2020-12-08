@@ -11,7 +11,7 @@ import com.tamz.tamzprojekt.R;
 import org.eazegraph.lib.charts.PieChart;
 import org.eazegraph.lib.models.PieModel;
 
-public class Statistics extends AppCompatActivity {
+public class StatisticsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

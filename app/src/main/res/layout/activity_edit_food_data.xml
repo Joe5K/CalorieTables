@@ -221,13 +221,20 @@
         android:id="@+id/imageView"
         android:layout_width="169dp"
         android:layout_height="223dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
         android:adjustViewBounds="true"
         android:maxWidth="100dp"
         android:maxHeight="100dp"
         app:layout_constraintEnd_toStartOf="@+id/timePicker"
         app:layout_constraintTop_toBottomOf="@+id/tableLayout"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/deleteTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hold the image to delete it"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

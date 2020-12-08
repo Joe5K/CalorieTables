@@ -7,9 +7,10 @@
     android:layout_height="match_parent">
 
     <SearchView
-        android:id="@+id/searchView2"
+        android:id="@+id/searchView"
         android:layout_width="402dp"
         android:layout_height="91dp"
+        android:queryHint="Search Here"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -28,16 +29,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="...or add new!"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView2" />
+        app:layout_constraintBottom_toTopOf="@+id/buttonNew"
+        app:layout_constraintEnd_toEndOf="@+id/buttonNew"
+        app:layout_constraintStart_toStartOf="@+id/buttonNew" />
 
     <Button
         android:id="@+id/buttonNew"
-        android:layout_width="351dp"
-        android:layout_height="69dp"
+        android:layout_width="384dp"
+        android:layout_height="61dp"
         android:text="NEW"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="fill_parent"
+        android:layout_height="539dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

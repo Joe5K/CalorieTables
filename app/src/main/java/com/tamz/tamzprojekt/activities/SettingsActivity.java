@@ -13,7 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tamz.tamzprojekt.Common;
 import com.tamz.tamzprojekt.R;
 
-public class Settings extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
     private static final String KEY_CALORIES = "Calories";
     private static final String KEY_FATS = "Fats";
     private static final String KEY_SACCHARIDES = "Saccharides";
