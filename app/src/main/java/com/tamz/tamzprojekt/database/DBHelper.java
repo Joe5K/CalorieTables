@@ -10,6 +10,8 @@ import android.graphics.BitmapFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DBHelper extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = "CalorieTables.db";
@@ -100,32 +102,33 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
 
+    public HashMap<String, Double> getDailyStats(long date) {
+        ArrayList<Food> foods = getFoodsInDay(date);
 
-    public Food getNewestFoodInfo(String name) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        double calories = 0;
+        double fats = 0;
+        double saccharides = 0;
+        double sugars = 0;
+        double proteins = 0;
 
-        Cursor cursor = db.query(TABLE_FOODS, new String[]{KEY_ID,
-                        KEY_NAME, KEY_WEIGHT, KEY_CALORIES, KEY_FATS, KEY_SACCHARIDES, KEY_SUGARS, KEY_PROTEINS, KEY_SALT, KEY_DATE, KEY_IMAGE}, KEY_NAME + "=?",
-                new String[]{name}, null, null, KEY_DATE + " DESC", null);
-        if (cursor != null)
-            cursor.moveToFirst();
+        for (Food food: foods) {
+            calories+=(food.getWeight()*(food.getCalories()/100));
+            fats+=(food.getWeight()*(food.getFats()/100));
+            saccharides+=(food.getWeight()*(food.getSaccharides()/100));
+            sugars+=(food.getWeight()*(food.getSugars()/100));
+            proteins+=(food.getWeight()*(food.getProteins()/100));
+        }
 
-        // return contact
-        Food food = new Food(
-                cursor.getInt(cursor.getColumnIndex(KEY_ID)),
-                cursor.getString(cursor.getColumnIndex(KEY_NAME)),
-                cursor.getDouble(cursor.getColumnIndex(KEY_WEIGHT)),
-                cursor.getDouble(cursor.getColumnIndex(KEY_CALORIES)),
-                cursor.getDouble(cursor.getColumnIndex(KEY_FATS)),
-                cursor.getDouble(cursor.getColumnIndex(KEY_SACCHARIDES)),
-                cursor.getDouble(cursor.getColumnIndex(KEY_SUGARS)),
-                cursor.getDouble(cursor.getColumnIndex(KEY_PROTEINS)),
-                cursor.getDouble(cursor.getColumnIndex(KEY_SALT)),
-                cursor.getLong(cursor.getColumnIndex(KEY_DATE)),
-                getBitmapFromByteArray(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE))));
-        cursor.close();
-        return food;
+        HashMap<String, Double> dailyStats = new HashMap<String, Double>();
+        dailyStats.put(KEY_CALORIES, calories);
+        dailyStats.put(KEY_FATS, fats);
+        dailyStats.put(KEY_SACCHARIDES, saccharides);
+        dailyStats.put(KEY_SUGARS, sugars);
+        dailyStats.put(KEY_PROTEINS, proteins);
+
+        return dailyStats;
     }
+
 
     public ArrayList<Food> getFoodsInDay(long date) {
         ArrayList<Food> foodList = new ArrayList<Food>();
@@ -184,26 +187,6 @@ public class DBHelper extends SQLiteOpenHelper{
         db.update(TABLE_FOODS, contentValues,"ID=?",new String[] {Integer.toString(food.getId())});
     }
 
-    private static long getTomorrowDate(long date){
-        return date + 86400000;
-    }
-
-    private static byte[] getByteArrayFromBitmap(Bitmap bitmap) {
-        if (bitmap == null)
-            return null;
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
-        return outputStream.toByteArray();
-    }
-
-    private static Bitmap getBitmapFromByteArray(byte[] data){
-        if (data == null)
-            return null;
-
-        return BitmapFactory.decodeByteArray(data, 0, data.length);
-    }
-
     public ArrayList<Food> getAllFoodsWith(String query) {
         ArrayList<Food> foodList = new ArrayList<Food>();
 
@@ -234,5 +217,25 @@ public class DBHelper extends SQLiteOpenHelper{
         cursor.close();
         System.out.println(foodList.size());
         return foodList;
+    }
+
+    private static long getTomorrowDate(long date){
+        return date + 86400000;
+    }
+
+    private static byte[] getByteArrayFromBitmap(Bitmap bitmap) {
+        if (bitmap == null)
+            return null;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        return outputStream.toByteArray();
+    }
+
+    private static Bitmap getBitmapFromByteArray(byte[] data){
+        if (data == null)
+            return null;
+
+        return BitmapFactory.decodeByteArray(data, 0, data.length);
     }
 }

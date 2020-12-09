@@ -6,14 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".activities.StatisticsActivity">
 
-    <org.eazegraph.lib.charts.PieChart
-        android:id="@+id/piechart"
+    <org.eazegraph.lib.charts.StackedBarChart
+        android:id="@+id/stackedbarchart"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:padding="8dp"
-        app:egLegendTextSize="18sp"
-        app:egInnerValueSize="36sp"
-        app:egInnerValueString="20"
+        android:layout_height="256dp"
+        android:padding="10dp"
+        app:egBarWidth="20dp"
+        app:egFixedBarWidth="true"
+        app:egLegendHeight="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="See your daily statistics"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -123,25 +123,6 @@
                 android:inputType="numberDecimal" />
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Salt" />
-
-            <EditText
-                android:id="@+id/salt"
-                android:layout_width="191dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="1dp"
-                android:layout_weight="1"
-                android:inputType="numberDecimal" />
-        </TableRow>
-
     </TableLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton2"
