@@ -23,20 +23,6 @@ import com.tamz.tamzprojekt.database.Food;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-//Aplikacia na evidovanie prijateho jedla a kalorii, ukadanie do db, export v JSON/XML, ukladanie geolokacie a casu pridania jedla, pridavanie obrazkov, ukladanie nastaveni do pamäte
-
-//UNDONE - export v JSON/XML, ukladanie geolokacie pridania jedla, pridavanie obrazkov
-
-/*Advanced GUI - Lists, Tabs, Fragments, Gestures
-//Database – SQLite
-//Multimedia – Audio, Video, playback, recording
-//Signal Processing – Image, Sound, Sensors
-//Persistent Storage – SharedPreferences
-Networking – Downloading data, JSON, WS
- */
-
-//statistiky a grafy, search, export JSON
-
 
 public class MainActivity extends AppCompatActivity {
 
