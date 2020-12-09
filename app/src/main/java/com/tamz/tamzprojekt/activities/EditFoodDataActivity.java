@@ -79,12 +79,12 @@ public class EditFoodDataActivity extends AppCompatActivity {
             sugars.setText(Common.getStringFromDouble(food.getSugars()));
             proteins.setText(Common.getStringFromDouble(food.getProteins()));
             salt.setText(Common.getStringFromDouble(food.getSalt()));
+            if (food.getImage() != null) {
+                imageBitmap = food.getImage();
+                imageView.setImageBitmap(imageBitmap);
+                deleteTextView.setVisibility(TextView.VISIBLE);
+            }
             if (!"NEW".equals(action)){
-                if (food.getImage() != null) {
-                    imageBitmap = food.getImage();
-                    imageView.setImageBitmap(imageBitmap);
-                    deleteTextView.setVisibility(TextView.VISIBLE);
-                }
                 Pair<Integer, Integer> time = Common.getTimeFromDate(food.getDate());
                 timePicker.setHour(time.first);
                 timePicker.setMinute(time.second);
