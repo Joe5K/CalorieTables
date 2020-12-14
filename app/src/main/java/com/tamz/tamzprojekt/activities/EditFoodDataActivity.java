@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Pair;
@@ -28,6 +29,7 @@ import com.tamz.tamzprojekt.database.Food;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 
 public class EditFoodDataActivity extends AppCompatActivity {
     private Bitmap imageBitmap;
@@ -122,6 +124,12 @@ public class EditFoodDataActivity extends AppCompatActivity {
                     food.setId(id);
                     dbHelper.editFood(food);
                 }
+
+                Random rand = new Random();
+                int[] sounds = new int[]{R.raw.burger, R.raw.chewburp, R.raw.eat, R.raw.eatingcucumber, R.raw.bunny};
+
+                MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), sounds[rand.nextInt(5)]);
+                mediaPlayer.start();
 
                 finish();
             }
